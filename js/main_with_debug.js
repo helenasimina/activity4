@@ -6,6 +6,7 @@ function initialize(){
     cities();
     addColumns();
     addEvents();
+    debugAjax();
 };
 
 //function to create a table with cities and their populations
@@ -140,24 +141,23 @@ function addEvents() {
     document.querySelector("table").addEventListener("click", clickme);
 };
 
-function debugCallback(response){
-	document.querySelector("#mydiv").insertAdjacentHTML('beforeend', 'GeoJSON data: ' + JSON.stringify(myData))
-};
-
 function debugAjax(){
+    // Fetch geojson file from data folder
 	
-	var myData;
-	
-	fetch("data/MegaCities.csv")
+	fetch("data/MegaCities.geojson")
 		.then(function(response){
-			debugCallback(response);
+			return response.text(); //convert response to text (doing this instead of stringify, ran into fewer problems this way)
 		})
+        .then(function(geojson) {
+            //insert data into mydiv as another div
+            mydiv.insertAdjacentHTML('beforeend','<div>' + geojson +'</div');
+        })
+        .catch(function(error) {
+            //add error message if there's a problem getting geoJSON data
+            console.error('Error fetching GeoJSON data:', error)
+        });
 
-	document.querySelector("#mydiv").insertAdjacentHTML('beforeend' '<br>GeoJSON data:<br>' + JSON.stringify(myData))
 };
-
-document.querySelector("#mydiv").insertAdjacentHTML('beforeend', 'GeoJSON data: ' + JSON.stringify(myData))
-
 
 //call the initialize function when the window has loaded
 window.onload = initialize;
